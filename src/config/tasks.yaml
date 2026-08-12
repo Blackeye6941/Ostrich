@@ -1,0 +1,21 @@
+generate_script_task:
+  description: >
+    Convert the user's voice command transcript into one script that
+    performs the requested desktop/OS action: {voice_command}
+
+    Rules:
+    1. Choose bash for simple system/file/process commands; choose Python
+       when the task needs parsing, logic, loops, or cross-platform handling.
+    2. Assume the target OS is {target_os}. Use only commands/tools
+       available on that OS by default.
+    3. If the command is destructive (delete, overwrite, kill process,
+       format, etc.), add a guarded confirmation step or a dry-run flag
+       instead of executing it unconditionally.
+    4. Do not invent parameters the user didn't provide — if a required
+       value is missing (e.g. a filename), use a clearly marked
+       placeholder instead of guessing.
+    5. No explanations, comments, markdown fences, or preamble — output
+       only the script.
+  expected_output: >
+    A single valid bash or Python script, plain text, executable as-is,
+    with no surrounding commentary or markdown formatting.
