@@ -2,6 +2,7 @@ from crewai import LLM, Agent, Task, Crew, Process
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import FileWriterTool
 from config.vars import vars
+from tools.tools import BackgroundShellTool
 
 llm = LLM(
     model="gemini/gemini-3.5-flash",
@@ -26,12 +27,29 @@ class OstrichCrew():
             ],
             max_rpm=3
         )
-    
+
+    @agent 
+    def executor_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config['executor_agent'],
+            llm=llm,
+            tools=[
+                BackgroundShellTool()
+            ],
+
+        )
     @task
-    def generate_code(self) -> Task:
+    def generate_script_task(self) -> Task:
         return Task(
             config=self.tasks_config['generate_script_task'],
             agent=self.code_generator()
+        )
+
+    @task
+    def execute_script_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['execute_script_task'],
+            agent=self.executor_agent()
         )
 
     @crew
@@ -45,10 +63,9 @@ class OstrichCrew():
         )
 
 if __name__ == "__main__":
-
     inputs = {
         "target_os": "linux",
-        "voice_command": "Can you open google chrome"
+        "voice_command": "can you open google-chrome with my profile abhiramajithr@gmail.com"
     }
 
     crew = OstrichCrew()

@@ -19,3 +19,26 @@ generate_script_task:
   expected_output: >
     A single valid bash or Python script, plain text, executable as-is,
     with no surrounding commentary or markdown formatting.
+
+
+execute_script_task:
+  description: >
+    Execute the script produced by generate_script_task in the appropriate
+    shell for its type (bash, PowerShell, or Python interpreter) on
+    {target_os}.
+
+    Rules:
+    1. Run the script exactly as received — do not edit, reformat, or
+       "fix" it before running.
+    2. Capture stdout, stderr, and the exit code.
+    3. If the script contains an unresolved placeholder (from a missing
+       parameter) or a guarded destructive action, do not execute it —
+       report that it requires user confirmation or missing input instead.
+    4. If execution fails, report the exact error rather than retrying
+       silently or generating a new script yourself.
+    5. Apply a reasonable timeout (e.g. 30s) for any command that could
+       hang, and report a timeout as a failure state.
+  expected_output: >
+    A structured result containing: status (success/failure/needs_confirmation),
+    stdout, stderr (if any), and exit_code. No extra commentary.
+  context: [generate_script_task]
