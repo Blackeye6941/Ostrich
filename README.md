@@ -1,4 +1,4 @@
-## Description
+# Ostrich
 
 Ostrich is a project that aims to create an agent that lets people control their desktop completely through voice.
 
