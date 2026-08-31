@@ -1,8 +1,8 @@
 from crewai import LLM, Agent, Task, Crew, Process
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import FileWriterTool
-from config.vars import vars
-from tools.tools import BackgroundShellTool
+from src.Agent.config.vars import vars
+from src.Agent.tools.tools import BackgroundShellTool
 
 llm = LLM(
     model="gemini/gemini-3.5-flash",
