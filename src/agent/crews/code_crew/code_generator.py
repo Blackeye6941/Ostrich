@@ -33,5 +33,5 @@ class CodeCrew:
             tasks = self.tasks,
             process = Process.sequential,
             verbose = True,
-            max_rpm=3
+            max_rpm=3,
         )

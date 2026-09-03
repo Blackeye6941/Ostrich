@@ -5,6 +5,7 @@ import platform
 import os
 from pathlib import Path
 import uuid
+import subprocess
 
 class State(BaseModel):
     os: str = ""
@@ -13,6 +14,7 @@ class State(BaseModel):
     is_destructive: bool = False
     user_approved: bool = False
     output: str = ""
+    error: str = ""
 
 
 class OstrichFlow(Flow[State]):
@@ -50,22 +52,16 @@ class OstrichFlow(Flow[State]):
         self.state.script_path = str(file_path)
         return self.state.script_path
 
-    """def plan(self):
-        pass
-
-    @listen
-    def safety_check():
-        pass
-
-    @listen
-    def execute():
-        pass
-
-    @listen
-    def review():
-        pass
-    """
-
+    @listen(generate_code)
+    def execute_code(self):
+        """Executes code in a subprocess"""
+        try:
+            process = subprocess.run(["bash", self.state.script_path], capture_output=True, text=True)
+            self.state.output = process.stdout
+            return self.state.output
+        except subprocess.TimeoutExpired as e:
+            self.state.error = e.stderr
+        
 def kickoff():
     """Run Ostrich flow"""
     OstrichFlow().kickoff()
