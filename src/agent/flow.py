@@ -42,7 +42,7 @@ class OstrichFlow(Flow[State]):
         output_dir.mkdir(exist_ok=True, parents=True)
 
         #Create a unique filepath and write script
-        id = uuid.uuid4
+        id = uuid.uuid4()
         file_path = output_dir / f"script_{id}.sh"
         file_path.write_text(result.raw)
         
