@@ -1,13 +1,18 @@
 from pydantic import BaseModel
 from crewai.flow.flow import Flow, listen, start
 from agent.crews.code_crew.code_generator import CodeCrew
+from crewai.experimental import ConversationState
+from crewai.experimental.conversational import ConversationConfig
 import platform
 import os
 from pathlib import Path
 import uuid
 import subprocess
+import mlflow
 
-class State(BaseModel):
+mlflow.crewai.autolog()
+
+class State(ConversationState):
     os: str = ""
     command: str = ""
     script_path: str = ""
@@ -17,24 +22,24 @@ class State(BaseModel):
     error: str = ""
 
 
+@ConversationConfig(defer_trace_finalization=True)
 class OstrichFlow(Flow[State]):
     """Flow for execution of User commands"""
 
+    conversational = True
     @start()
-    def get_user_input(self):
+    def platform_setup(self):
         """Get user Command for script generation"""
-        print("Getting inputs")
-        self.state.command = input("Enter command to perform: ")
         if not self.state.os:
             self.state.os = platform.system()
         return self.state
 
-    @listen(get_user_input)
+    @listen(platform_setup)
     def generate_code(self):
         """Generate script and add it to temp file"""
         result = CodeCrew().crew().kickoff(
             inputs = {
-                'text_command' : self.state.command,
+                'text_command' : self.state.current_user_message,
                 'target_os' : self.state.os
             }
         )
@@ -55,6 +60,7 @@ class OstrichFlow(Flow[State]):
     @listen(generate_code)
     def execute_code(self):
         """Executes code in a subprocess"""
+
         try:
             process = subprocess.run(["bash", self.state.script_path], capture_output=True, text=True)
             self.state.output = process.stdout
@@ -62,10 +68,11 @@ class OstrichFlow(Flow[State]):
         except subprocess.TimeoutExpired as e:
             self.state.error = e.stderr
         
+        
 def kickoff():
     """Run Ostrich flow"""
-    OstrichFlow().kickoff()
-    print("=====Flow COmplete=====")
+    flow = OstrichFlow()
+    flow.chat()
 
 if __name__ == "__main__":
     kickoff()

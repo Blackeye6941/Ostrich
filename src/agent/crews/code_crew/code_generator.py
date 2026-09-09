@@ -2,6 +2,7 @@ import os
 import platform
 from crewai import LLM, Agent, Task, Crew, Process
 from crewai.project import CrewBase, agent, task, crew
+import mlflow
 
 llm = LLM(
     model="gemini/gemini-3.5-flash",
