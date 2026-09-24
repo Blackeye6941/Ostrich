@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 class Window(BaseModel):
     id: str
     app: str
