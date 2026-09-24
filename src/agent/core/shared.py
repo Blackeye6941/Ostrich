@@ -16,6 +16,8 @@ class ActionState(BaseModel):
     id: str
     type: str
     params: dict
+    target: str
+    element: str
     window_id: str
     requires_approval: bool
     status: str
