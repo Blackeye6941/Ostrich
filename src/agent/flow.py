@@ -39,7 +39,7 @@ class DesktopState(ConversationState):
     windows: Window
     active_window: str
     last_action: LastAction
-    planned_actions: ActionState[]
+    planned_actions: list[ActionState]
 
    
 @ConversationConfig(defer_trace_finalization=True)
