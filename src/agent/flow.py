@@ -3,6 +3,7 @@ from crewai.flow.flow import Flow, listen, start
 from agent.crews.code_crew.code_generator import CodeCrew
 from crewai.experimental import ConversationState
 from crewai.experimental.conversational import ConversationConfig
+from agent.core.shared import Window, LastAction, ActionState
 import platform
 import os
 from pathlib import Path
@@ -13,26 +14,6 @@ import time
 import select
 
 mlflow.crewai.autolog()
-
-class Window(BaseModel):
-    id: str
-    app: str
-    handle: str
-    title: str
-    status: str
-
-class LastAction(BaseModel):
-    type: str
-    window_id: str
-    element: str
-
-class ActionState(BaseModel):
-    id: str
-    type: str
-    params: dict
-    window_id: str
-    requires_approval: bool
-    status: str
 
 class DesktopState(ConversationState):
     os: str = ""
