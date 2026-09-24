@@ -43,7 +43,7 @@ class DesktopState(ConversationState):
 
    
 @ConversationConfig(defer_trace_finalization=True)
-class OstrichFlow(Flow[State]):
+class OstrichFlow(Flow[DesktopState]):
     """Flow for execution of User commands"""
 
     conversational = True
