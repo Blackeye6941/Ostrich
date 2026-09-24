@@ -9,6 +9,8 @@ from pathlib import Path
 import uuid
 import subprocess
 import mlflow
+import time
+import select
 
 mlflow.crewai.autolog()
 
@@ -26,7 +28,18 @@ class State(ConversationState):
 class OstrichFlow(Flow[State]):
     """Flow for execution of User commands"""
 
+    _shell_process: subprocess.Popen | None = None  # not a pydantic field, just an instance attr
+
+    def _get_shell(self):
+        if self._shell_process is None or self._shell_process.poll() is not None:
+            self._shell_process = subprocess.Popen(
+                ["bash"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, text=True, bufsize=1,
+            )
+        return self._shell_process
+
     conversational = True
+
     @start()
     def platform_setup(self):
         """Get user Command for script generation"""
@@ -43,7 +56,7 @@ class OstrichFlow(Flow[State]):
                 'target_os' : self.state.os
             }
         )
-
+ 
         #Create Output Dir if not exists
         output_dir = Path.home() / "temp_ostrich"
         output_dir.mkdir(exist_ok=True, parents=True)
@@ -61,12 +74,42 @@ class OstrichFlow(Flow[State]):
     def execute_code(self):
         """Executes code in a subprocess"""
 
-        try:
-            process = subprocess.run(["bash", self.state.script_path], capture_output=True, text=True)
-            self.state.output = process.stdout
+        shell = self._get_shell()
+        sentinel = f"__DONE_{uuid.uuid4().hex}__"
+
+        command = "bash"
+
+        if self.state.script_path.endswith(".py"):
+            command = "python3"
+
+        command = f'{command} "{self.state.script_path}"; echo {sentinel} $?\n'
+        shell.stdin.write(command)
+        shell.stdin.flush()
+
+        output_lines = []
+        exit_code = None
+        deadline = time.monotonic() + 30  # your timeout budget
+
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select([shell.stdout], [], [], 1.0)
+            if not ready:
+                continue
+            line = shell.stdout.readline()
+            if not line:
+                break
+            if line.startswith(sentinel):
+                exit_code = int(line.strip().split()[-1])
+                break
+            output_lines.append(line)
+        else:
+            self.state.error = "Script timed out"
+            self.state.output = "".join(output_lines)
             return self.state.output
-        except subprocess.TimeoutExpired as e:
-            self.state.error = e.stderr
+
+        self.state.output = "".join(output_lines)
+        if exit_code != 0:
+            self.state.error = f"Script exited with code {exit_code}"
+        return self.state.output
         
         
 def kickoff():
