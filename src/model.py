@@ -1,11 +1,12 @@
 import needle
 
-from tools import (
+from tools.desktop_navigation import (
     open_app,
     list_windows,
     switch_window,
     maximize_window,
     minimize_window,
+    split_screen,
 )
 
 agent = needle.Needle(
@@ -15,6 +16,7 @@ agent = needle.Needle(
         switch_window,
         maximize_window,
         minimize_window,
+        split_screen,
     ]
 )
 
@@ -22,7 +24,10 @@ agent = needle.Needle(
 def chat_loop():
     print("=" * 50)
     print("Desktop Navigator Agent CLI")
-    print("Type your instruction (e.g. 'open notepad', 'list windows', 'minimize chrome').")
+    print(
+        "Type your instruction (e.g. 'open notepad', 'list windows', "
+        "'minimize chrome', 'maximize code', 'split screen')."
+    )
     print("Type 'exit' or 'quit' to leave.")
     print("=" * 50)
 
