@@ -1,7 +1,7 @@
 [project]
 name = "ostrich"
 version = "0.1.0"
-description = "Add your description here"
+description = "A desktop AI agent"
 readme = "README.md"
 authors = [
     { name = "Abhiram A R", email = "abhiramajithr@gmail.com" }
@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.scripts]
-ostrich = "ostrich:main"
+ostrich = "ostrich.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.1,<0.13.0"]
@@ -19,7 +19,3 @@ build-backend = "uv_build"
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
-markers = [
-    "windows_integration: Windows integration tests requiring live desktop",
-]
-
