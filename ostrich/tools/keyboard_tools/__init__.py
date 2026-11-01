@@ -3,6 +3,9 @@ from ostrich.tools.keyboard_tools.base import (
     WindowsKeyboardNavigator,
     LinuxKeyboardNavigator,
     get_keyboard_navigator,
+    keyboard_type_text,
+    keyboard_hotkey,
+    keyboard_press_key
 )
 
 __all__ = [
@@ -10,4 +13,7 @@ __all__ = [
     "WindowsKeyboardNavigator",
     "LinuxKeyboardNavigator",
     "get_keyboard_navigator",
+    "keyboard_type_text",
+    "keyboard_hotkey",
+    "keyboard_press_key"
 ]

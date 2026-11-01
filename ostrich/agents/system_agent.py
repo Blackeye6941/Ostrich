@@ -40,4 +40,5 @@ tools = [
 ]
 
 
-system_agent = needle.Needle(tools=tools)
+def get_system_agent():
+    return needle.Needle(tools=tools)

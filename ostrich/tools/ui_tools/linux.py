@@ -256,20 +256,6 @@ class LinuxDesktopNavigator(DesktopNavigator):
                     "pid": proc.pid,
                 }
 
-            # If gtk-launch exists, try launching by desktop name
-            if shutil.which("gtk-launch"):
-                proc = subprocess.Popen(
-                    ["gtk-launch", raw_name],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    start_new_session=True,
-                )
-                return {
-                    "success": True,
-                    "message": f"Launched '{raw_name}' via gtk-launch (PID {proc.pid}).",
-                    "pid": proc.pid,
-                }
-
             # Direct fallback execution attempt
             proc = subprocess.Popen(
                 [raw_name] + launch_args,
