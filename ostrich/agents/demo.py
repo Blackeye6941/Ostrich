@@ -192,27 +192,6 @@ def build_steps(home):
         ),
 
         Step(
-            command="create a new tab",
-            expect="tab count increases by one",
-            observe=tab_state,
-            check=lambda before, after: (
-                after["count"] == before["count"] + 1
-            ),
-        ),
-
-        Step(
-            command="switch to the third terminal tab",
-            expect="third tab selected",
-            observe=tab_state,
-            precondition=lambda state: (
-                state is not None and state["count"] >= 3
-            ),
-            check=lambda before, after: (
-                after["selected"] == 3
-            ),
-        ),
-
-        Step(
             command=f"switch to the {ORD[home - 1]} terminal tab",
             expect=f"back on tab {home}",
             observe=tab_state,
